@@ -25,7 +25,7 @@ if( ${clone_field_api} )
    FetchContent_Declare(
       field_api
       GIT_REPOSITORY git@github.com:ecmwf-ifs/field_api.git
-      GIT_TAG naan-ecbuild
+      GIT_TAG naan-cuda
       OVERRIDE_FIND_PACKAGE
    )
    

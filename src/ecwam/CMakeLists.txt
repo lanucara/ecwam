@@ -442,6 +442,7 @@ ecbuild_add_library(
     PRIVATE_INCLUDES ${${PNAME}_OCEANMODEL_INCLUDE_DIRS}
     PUBLIC_DEFINITIONS ${ECWAM_DEFINITIONS}
 )
+target_link_options(${ecwam} PUBLIC $<${HAVE_CUDA}:-cuda>)
 
 ecwam_target_fortran_module_directory(
     TARGET ${ecwam}
@@ -527,6 +528,7 @@ if( HAVE_WAM_LOKI )
       PRIVATE_INCLUDES ${${PNAME}_OCEANMODEL_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}
       PUBLIC_DEFINITIONS ${ECWAM_DEFINITIONS}
   )
+  target_link_options(${ecwam}_idem PUBLIC $<${HAVE_CUDA}:-cuda>)
 
   ecwam_target_fortran_module_directory(
       TARGET ${ecwam}_idem
@@ -571,6 +573,7 @@ if( HAVE_WAM_LOKI )
       PRIVATE_INCLUDES ${${PNAME}_OCEANMODEL_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}
       PUBLIC_DEFINITIONS ${ECWAM_DEFINITIONS}
   )
+  target_link_options(${ecwam}_idem_stack PUBLIC $<${HAVE_CUDA}:-cuda>)
 
   ecwam_target_fortran_module_directory(
       TARGET ${ecwam}_idem_stack
@@ -596,6 +599,11 @@ if( HAVE_WAM_LOKI )
         list(APPEND loki_scc_srcs ${fnm})
      endforeach()
 
+     set(LOKI_DEFINITIONS "")
+     if( HAVE_CUDA )
+        set(LOKI_DEFINITIONS "_CUDA")
+     endif()
+
      loki_transform_convert(
          MODE scc FRONTEND ${LOKI_FRONTEND} CPP GLOBAL_VAR_OFFLOAD TRIM_VECTOR_SECTIONS
          CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/ecwam_loki_gpu.config
@@ -604,6 +612,7 @@ if( HAVE_WAM_LOKI )
          OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/loki-scc
          OUTPUT ${loki_scc_srcs}
          DEPENDS ${phys_srcs} wamintgr_loki_gpu.F90 ${global_var_mods}
+         DEFINITIONS ${LOKI_DEFINITIONS}
      )
 
      ecbuild_add_library(
@@ -622,6 +631,7 @@ if( HAVE_WAM_LOKI )
      	PRIVATE_INCLUDES ${${PNAME}_OCEANMODEL_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}
      	PUBLIC_DEFINITIONS ${ECWAM_DEFINITIONS} WAM_PHYS_GPU
      )
+     target_link_options(${ecwam}_scc PUBLIC $<${HAVE_CUDA}:-cuda>)
      
      ecwam_target_fortran_module_directory(
      	TARGET ${ecwam}_scc
@@ -652,6 +662,7 @@ if( HAVE_WAM_LOKI )
          OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/loki-scc-stack
          OUTPUT ${loki_scc_stack_srcs}
          DEPENDS ${phys_srcs} wamintgr_loki_gpu.F90 ${global_var_mods}
+         DEFINITIONS ${LOKI_DEFINITIONS}
      )
 
      ecbuild_add_library(
@@ -670,6 +681,7 @@ if( HAVE_WAM_LOKI )
      	PRIVATE_INCLUDES ${${PNAME}_OCEANMODEL_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}
      	PUBLIC_DEFINITIONS ${ECWAM_DEFINITIONS} WAM_PHYS_GPU
      )
+     target_link_options(${ecwam}_scc_stack PUBLIC $<${HAVE_CUDA}:-cuda>)
      
      ecwam_target_fortran_module_directory(
      	TARGET ${ecwam}_scc_stack
@@ -729,5 +741,5 @@ if( HAVE_CUDA )
   
   ecwam_target_compile_definitions_FILENAME( ${ecwam}_scc_cuf )
 
-  target_link_options( ${ecwam}_scc_cuf PUBLIC "-cuda;-gpu=pinned" )
+  target_link_options( ${ecwam}_scc_cuf PUBLIC "-cuda" )
 endif()
