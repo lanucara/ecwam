@@ -25,7 +25,7 @@ projects :
 
     - loki :
         git     : https://github.com/ecmwf-ifs/loki
-        version : main
+        version : naan-deviceptr
         optional: true
         require : ecbuild
         cmake   : >

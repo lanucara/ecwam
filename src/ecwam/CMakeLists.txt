@@ -599,20 +599,20 @@ if( HAVE_WAM_LOKI )
         list(APPEND loki_scc_srcs ${fnm})
      endforeach()
 
-     set(LOKI_DEFINITIONS "")
+     set(DATA_OFFLOAD_OPTIONS "")
      if( HAVE_CUDA )
-        set(LOKI_DEFINITIONS "_CUDA")
+        set(DATA_OFFLOAD_OPTIONS "DATA_OFFLOAD;ASSUME_DEVICEPTR")
      endif()
 
      loki_transform_convert(
          MODE scc FRONTEND ${LOKI_FRONTEND} CPP GLOBAL_VAR_OFFLOAD TRIM_VECTOR_SECTIONS
+         ${DATA_OFFLOAD_OPTIONS}
          CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/ecwam_loki_gpu.config
          PATH ${CMAKE_CURRENT_SOURCE_DIR}
          INCLUDES ${ecwam_intfb_includes}
          OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/loki-scc
          OUTPUT ${loki_scc_srcs}
          DEPENDS ${phys_srcs} wamintgr_loki_gpu.F90 ${global_var_mods}
-         DEFINITIONS ${LOKI_DEFINITIONS}
      )
 
      ecbuild_add_library(
@@ -656,13 +656,13 @@ if( HAVE_WAM_LOKI )
 
      loki_transform_convert(
          MODE scc-stack FRONTEND ${LOKI_FRONTEND} CPP GLOBAL_VAR_OFFLOAD TRIM_VECTOR_SECTIONS
+         ${DATA_OFFLOAD_OPTIONS}
          CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/ecwam_loki_gpu.config
          PATH ${CMAKE_CURRENT_SOURCE_DIR}
          INCLUDES ${ecwam_intfb_includes}
          OUTPATH ${CMAKE_CURRENT_BINARY_DIR}/loki-scc-stack
          OUTPUT ${loki_scc_stack_srcs}
          DEPENDS ${phys_srcs} wamintgr_loki_gpu.F90 ${global_var_mods}
-         DEFINITIONS ${LOKI_DEFINITIONS}
      )
 
      ecbuild_add_library(
